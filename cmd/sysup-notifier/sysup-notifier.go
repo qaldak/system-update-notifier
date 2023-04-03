@@ -1,34 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
+
+	"sysup-notifier/internal/pub"
+	"sysup-notifier/internal/sysos"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	fmt.Println(getFoo())
+	// load env
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
 
-	hasUpdates := determineUpdates()
+	hasUpdates := sysos.CheckForUpdates()
 
 	if hasUpdates {
 		log.Println("Updates available.")
+		pub.SlackMsg()
 	}
-}
-
-func getFoo() string {
-	return "Foo"
-}
-
-func determineUpdates() bool {
-	_, err := os.Stat("testdata/.update_available")
-	if err != nil {
-		log.Println("No dietpi updates available.")
-		_, err := os.Stat("testdata/.apt_updates")
-		if err != nil {
-			log.Println("No apt updates available.")
-			return false
-		}
-	}
-	return true
 }

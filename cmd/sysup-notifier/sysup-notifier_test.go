@@ -2,16 +2,9 @@ package main
 
 import (
 	"testing"
+
+	"sysup-notifier/internal/sysos"
 )
-
-func TestFoo(t *testing.T) {
-	got := getFoo()
-	want := "Foo"
-
-	if got != want {
-		t.Errorf("got %q want %q", got, want)
-	}
-}
 
 func Test_determineUpdates(t *testing.T) {
 	tests := []struct {
@@ -22,7 +15,7 @@ func Test_determineUpdates(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := determineUpdates(); got != tt.want {
+			if got := sysos.CheckForUpdates(); got != tt.want {
 				t.Errorf("determineUpdates() = %v, want %v", got, tt.want)
 			}
 		})

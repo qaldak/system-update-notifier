@@ -17,3 +17,6 @@
 # IDE settings
 .vscode
 .prettier
+
+# ENV files
+.env
