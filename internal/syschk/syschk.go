@@ -1,16 +1,16 @@
-package sysos
+package syschk
 
 import (
 	"log"
 	"os"
 )
 
-func CheckForUpdates() bool {
+func SearchForUpdates() bool {
 	// check update files on Dietpi
 	updateFiles := []string{"testdata/.update_available", "testdata/.apt_updates"}
 
 	for _, file := range updateFiles {
-		fileExists := determineUpdateFiles(file)
+		fileExists := determineUpdateFile(file)
 		if fileExists {
 			log.Println("Update file found:", file)
 			return true
@@ -20,7 +20,7 @@ func CheckForUpdates() bool {
 	return false
 }
 
-func determineUpdateFiles(file string) bool {
+func determineUpdateFile(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
 		log.Println("Update file not found:", file)

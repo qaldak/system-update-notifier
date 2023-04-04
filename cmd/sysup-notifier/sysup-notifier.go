@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"sysup-notifier/internal/pub"
-	"sysup-notifier/internal/sysos"
+	"sysup-notifier/internal/syschk"
 
 	"github.com/joho/godotenv"
 )
@@ -18,7 +18,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	hasUpdates := sysos.CheckForUpdates()
+	hasUpdates := syschk.SearchForUpdates()
 
 	if hasUpdates {
 		log.Println("Updates available.")
