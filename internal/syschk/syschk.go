@@ -5,14 +5,18 @@ import (
 	"os"
 )
 
-func SearchForUpdates() bool {
-	// check update files on Dietpi
-	updateFiles := []string{"testdata/.update_available", "testdata/.apt_updates"}
+type UpdateFiles struct {
+	os   string
+	file string
+}
 
-	for _, file := range updateFiles {
-		fileExists := determineUpdateFile(file)
+// Checks whether updates are available for operating system.
+// Returns boolean value "true" if updates available, otherwise "false".
+func SearchForUpdates() bool {
+	for _, f := range getUpdateFiles() {
+		fileExists := determineUpdateFile(f.file)
 		if fileExists {
-			log.Println("Update file found:", file)
+			log.Println("Update file found:", f.file)
 			return true
 		}
 	}
@@ -20,6 +24,22 @@ func SearchForUpdates() bool {
 	return false
 }
 
+// Returns necessary update files for checking.
+func getUpdateFiles() []UpdateFiles {
+	return []UpdateFiles{
+		{
+			os:   "dietpi",
+			file: "testdata/.update_available",
+		},
+		{
+			os:   "dietpi",
+			file: "testdata/.apt_updates",
+		},
+	}
+}
+
+// Check whether update file is available.
+// Returns "true", if input file found, otherwise "false".
 func determineUpdateFile(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
