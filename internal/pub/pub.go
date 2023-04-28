@@ -9,6 +9,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// Generates and sends message to Slack.
 func SlackMsg() {
 	msg := generateMsg()
 
@@ -29,6 +30,7 @@ func SlackMsg() {
 	log.Printf("Message sent successfully on Channel %s at %s", channelId, timestamp)
 }
 
+// Generates message about available system updates.
 func generateMsg() string {
 	h := getHostname()
 	msg := fmt.Sprintf("[%s] System updates available", h)
@@ -36,6 +38,7 @@ func generateMsg() string {
 	return msg
 }
 
+// Get hostname from operating system.
 func getHostname() string {
 	h, err := os.Hostname()
 	if err != nil {
