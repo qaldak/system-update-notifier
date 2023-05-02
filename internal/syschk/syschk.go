@@ -29,11 +29,11 @@ func getUpdateFiles() []UpdateFiles {
 	return []UpdateFiles{
 		{
 			os:   "dietpi",
-			file: "testdata/.update_available",
+			file: "/run/dietpi/.update_available",
 		},
 		{
 			os:   "dietpi",
-			file: "testdata/.apt_updates",
+			file: "/run/dietpi/.apt_updates",
 		},
 	}
 }
