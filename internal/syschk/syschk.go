@@ -3,11 +3,34 @@ package syschk
 import (
 	"log"
 	"os"
+	"os/exec"
 )
 
 type UpdateFiles struct {
 	os   string
 	file string
+}
+
+func SearchForUpdatesWithApt() bool {
+	err := exec.Command("sudo", "apt-get", "-y", "-qq", "update").Run()
+	if err != nil {
+		log.Printf("Error on 'apt-get update': %s", err)
+	}
+
+	cmd := "sudo apt list -qq --upgradable 2> /dev/null | wc -l"
+	c, err := exec.Command("bash", "-c", cmd).Output()
+
+	if err != nil {
+		log.Printf("Error on '%s': %s", cmd, err)
+	}
+
+	if int(c[0]) != 0 {
+		log.Printf("%s updates available.", c)
+
+		return false // Todo: true!
+	}
+
+	return false
 }
 
 // Checks whether updates are available for operating system.

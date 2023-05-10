@@ -18,7 +18,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	hasUpdates := syschk.SearchForUpdates()
+	hasUpdates := syschk.SearchForUpdatesWithApt()
+	log.Println(hasUpdates)
 
 	if hasUpdates {
 		log.Println("Updates available.")
