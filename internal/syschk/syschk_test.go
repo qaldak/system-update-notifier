@@ -5,35 +5,53 @@ import (
 	"testing"
 )
 
-func Test_getUpdateFiles(t *testing.T) {
+func Test_getOsFiles(t *testing.T) {
 	tests := []struct {
-		name string
-		want []UpdateFiles
+		name  string
+		os    OS
+		usage FileUsage
+		want  []OsFiles
 	}{
 		{
-			name: "Update files for Dietpi",
-			want: []UpdateFiles{
+			name:  "Update files for Dietpi",
+			os:    DietPi,
+			usage: Updates,
+			want: []OsFiles{
 				{
-					os:   "dietpi",
-					file: "testdata/.update_available",
+					os:    DietPi,
+					file:  "/run/dietpi/.update_available",
+					usage: Updates,
 				},
 				{
-					os:   "dietpi",
-					file: "testdata/.apt_updates",
+					os:    DietPi,
+					file:  "/run/dietpi/.apt_updates",
+					usage: Updates,
+				},
+			},
+		},
+		{
+			name:  "Identifier file for Dietpi",
+			os:    DietPi,
+			usage: Identifier,
+			want: []OsFiles{
+				{
+					os:    DietPi,
+					file:  "/boot/dietpi.txt",
+					usage: Identifier,
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getUpdateFiles(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getUpdateFiles() = %v, want %v", got, tt.want)
+			if got := getOsFiles(tt.os, tt.usage); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getOsFiles() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_determineUpdateFile(t *testing.T) {
+func Test_determineFile(t *testing.T) {
 	tests := []struct {
 		name string
 		file string
@@ -49,11 +67,16 @@ func Test_determineUpdateFile(t *testing.T) {
 			file: "../../testdata/.foo",
 			want: false,
 		},
+		{
+			name: "Identifier file found",
+			file: "../../testdata/dietpi.txt",
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := determineUpdateFile(tt.file); got != tt.want {
-				t.Errorf("determineUpdateFile() = %v, want %v", got, tt.want)
+			if got := determineFile(tt.file); got != tt.want {
+				t.Errorf("determineFile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
