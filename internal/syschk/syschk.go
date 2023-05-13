@@ -15,10 +15,11 @@ import (
 type Distro int
 
 const (
-	DietPi Distro = iota
+	All    Distro = iota // for all Linux distros
+	Debian               // Debian bases OS by ID_Like
+	DietPi
 	Raspbian
-	Debian // Debian bases OS by ID_Like
-	Other  // Undefined distro/OS
+	Other // Undefined distro/OS
 )
 
 func (d Distro) toString() string {
@@ -30,12 +31,13 @@ type FileUsage int
 const (
 	Updates FileUsage = iota
 	Identifier
+	OSRelease
 )
 
-type OsFiles struct {
-	os    Distro
-	file  string
-	usage FileUsage
+type DistroFile struct {
+	distro Distro
+	file   string
+	usage  FileUsage
 }
 
 // Checks for available updates on OS.
@@ -47,12 +49,12 @@ func SearchForUpdates() bool {
 	updatesAvbl := false
 
 	switch d {
+	case Other:
+		log.Printf("OS not defined: %v", d)
 	case DietPi:
 		updatesAvbl = SearchForUpdatesOnDietpi()
-	case Debian:
-		updatesAvbl = SearchForUpdatesWithApt()
 	default:
-		log.Printf("OS not defined: %v", d)
+		updatesAvbl = SearchForUpdatesWithApt()
 	}
 
 	if updatesAvbl {
@@ -65,7 +67,7 @@ func SearchForUpdates() bool {
 // Checks whether updates are available for Dietpi operating system.
 // Returns boolean value "true" if updates available, otherwise "false".
 func SearchForUpdatesOnDietpi() bool {
-	for _, f := range getOsFiles(DietPi, Updates) {
+	for _, f := range getDistroFiles(DietPi, Updates) {
 		fileExists := determineFile(f.file)
 		if fileExists {
 			log.Println("Update file found:", f.file)
@@ -105,7 +107,7 @@ func SearchForUpdatesWithApt() bool {
 
 // Returns "true" on Dietpi OS, otherwise false
 func determineDistro() Distro {
-	for _, f := range getOsFiles(DietPi, Identifier) {
+	for _, f := range getDistroFiles(DietPi, Identifier) {
 		fileExists := determineFile(f.file)
 		if fileExists {
 			log.Println("Identifier file found:", f.file)
@@ -113,7 +115,10 @@ func determineDistro() Distro {
 		}
 	}
 
-	osrmap, osrMapExists := getOSRelease()
+	osr := getDistroFiles(All, OSRelease)[0].file
+	log.Println(osr)
+
+	osrmap, osrMapExists := readOSRelease(osr)
 
 	if osrMapExists {
 		osrID := cases.Title(language.Und).String(osrmap["ID"])
@@ -142,9 +147,9 @@ func determineDistro() Distro {
 
 // Read /etc/os-release and create key/value map.
 // Returns map and a boolean value, if os-release (map) exists.
-func getOSRelease() (map[string]string, bool) {
+func readOSRelease(file string) (map[string]string, bool) {
 	osmap := make(map[string]string)
-	fc, err := os.ReadFile("/etc/os-release")
+	fc, err := os.ReadFile(file)
 
 	if err != nil {
 		log.Println("/etc/os-release not exists.")
@@ -162,6 +167,8 @@ func getOSRelease() (map[string]string, bool) {
 		k := pair[0]
 		v := pair[1]
 
+		v = strings.Trim(v, "\"")
+		v = strings.Trim(v, "\r")
 		v = strings.Trim(v, "\"")
 		osmap[k] = v
 	}
@@ -182,29 +189,34 @@ func determineFile(file string) bool {
 }
 
 // Returns necessary update files for checking.
-func getOsFiles(os Distro, usage FileUsage) []OsFiles {
-	res := []OsFiles{}
-	osFiles := []OsFiles{
+func getDistroFiles(d Distro, usage FileUsage) []DistroFile {
+	res := []DistroFile{}
+	file := []DistroFile{
 		{
-			os:    DietPi,
-			file:  "/run/dietpi/.update_available",
-			usage: Updates,
+			distro: DietPi,
+			file:   "/run/dietpi/.update_available",
+			usage:  Updates,
 		},
 		{
-			os:    DietPi,
-			file:  "/run/dietpi/.apt_updates",
-			usage: Updates,
+			distro: DietPi,
+			file:   "/run/dietpi/.apt_updates",
+			usage:  Updates,
 		},
 		{
-			os:    DietPi,
-			file:  "/boot/dietpi.txt",
-			usage: Identifier,
+			distro: DietPi,
+			file:   "/boot/dietpi.txt",
+			usage:  Identifier,
+		},
+		{
+			distro: All,
+			file:   "/etc/os-release",
+			usage:  OSRelease,
 		},
 	}
 
-	for i := range osFiles {
-		if osFiles[i].usage == usage && osFiles[i].os == os {
-			res = append(res, osFiles[i])
+	for i := range file {
+		if file[i].usage == usage && file[i].distro == d {
+			res = append(res, file[i])
 		}
 	}
 	return res
