@@ -8,7 +8,7 @@ import (
 func Test_getOsFiles(t *testing.T) {
 	tests := []struct {
 		name  string
-		os    OS
+		os    Distro
 		usage FileUsage
 		want  []OsFiles
 	}{

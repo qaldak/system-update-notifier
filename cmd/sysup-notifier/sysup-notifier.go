@@ -18,7 +18,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	hasUpdates := syschk.SearchForUpdatesWithApt()
+	// Todo: input params / start arguments
+	// Todo: logger (Debug, Errors)
+
+	hasUpdates := syschk.SearchForUpdates()
 	log.Println(hasUpdates)
 
 	if hasUpdates {
