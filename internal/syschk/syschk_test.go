@@ -98,18 +98,18 @@ func Test_readOSRelease(t *testing.T) {
 				file: "../../testdata/os-release/ubuntu",
 			},
 			want: map[string]string{
-				"PRETTY_NAME":"Ubuntu 22.04.2 LTS",
-				"VERSION_ID":"22.04",
-				"VERSION":"22.04.2 LTS (Jammy Jellyfish)",
-				"SUPPORT_URL":"https://help.ubuntu.com/",
-				"BUG_REPORT_URL":"https://bugs.launchpad.net/ubuntu/",
-				"NAME":"Ubuntu",
-				"VERSION_CODENAME":"jammy",
-				"ID":"ubuntu",
-				"ID_LIKE":"debian",
-				"HOME_URL":"https://www.ubuntu.com/",
-				"PRIVACY_POLICY_URL":"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
-				"UBUNTU_CODENAME":"jammy",
+				"PRETTY_NAME":        "Ubuntu 22.04.2 LTS",
+				"VERSION_ID":         "22.04",
+				"VERSION":            "22.04.2 LTS (Jammy Jellyfish)",
+				"SUPPORT_URL":        "https://help.ubuntu.com/",
+				"BUG_REPORT_URL":     "https://bugs.launchpad.net/ubuntu/",
+				"NAME":               "Ubuntu",
+				"VERSION_CODENAME":   "jammy",
+				"ID":                 "ubuntu",
+				"ID_LIKE":            "debian",
+				"HOME_URL":           "https://www.ubuntu.com/",
+				"PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+				"UBUNTU_CODENAME":    "jammy",
 			},
 			want1: true,
 		},
@@ -118,9 +118,7 @@ func Test_readOSRelease(t *testing.T) {
 			args: args{
 				file: "../../testdata/os-release/foo",
 			},
-			want: map[string]string{
-
-			},
+			want:  map[string]string{},
 			want1: false,
 		},
 	}
@@ -137,17 +135,104 @@ func Test_readOSRelease(t *testing.T) {
 	}
 }
 
-func Test_determineDistro(t *testing.T) {
+func Test_determineDietPi(t *testing.T) {
+	type args struct {
+		df []DistroFile
+	}
 	tests := []struct {
 		name string
-		want Distro
+		args args
+		want bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "isDietPi true",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/dietpi.txt",
+						usage:  Identifier,
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "isDietPi false",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/foo.txt",
+						usage:  Identifier,
+					},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := determineDistro(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("determineDistro() = %v, want %v", got, tt.want)
+			if got := determineDietPi(tt.args.df); got != tt.want {
+				t.Errorf("determineDietPi() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_determineDistroByOSRelease(t *testing.T) {
+	type args struct {
+		df []DistroFile
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantDistro Distro
+	}{
+		{
+			name: "determine distro by ID successfully",
+			args: args{
+				[]DistroFile{
+					{
+						distro: All,
+						file:   "../../testdata/os-release/raspbian",
+						usage:  OSRelease,
+					},
+				},
+			},
+			wantDistro: Raspbian,
+		},
+		{
+			name: "determine distro by ID_LIKE successfully",
+			args: args{
+				[]DistroFile{
+					{
+						distro: All,
+						file:   "../../testdata/os-release/ubuntu",
+						usage:  OSRelease,
+					},
+				},
+			},
+			wantDistro: Debian,
+		},
+		{
+			name: "determine failed, return Other",
+			args: args{
+				[]DistroFile{
+					{
+						distro: All,
+						file:   "../../testdata/os-release/opensuse",
+						usage:  OSRelease,
+					},
+				},
+			},
+			wantDistro: Other,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotDistro := determineDistroByOSRelease(tt.args.df); !reflect.DeepEqual(gotDistro, tt.wantDistro) {
+				t.Errorf("determineDistroByOSRelease() = %v, want %v", gotDistro, tt.wantDistro)
 			}
 		})
 	}

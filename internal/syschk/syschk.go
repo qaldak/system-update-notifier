@@ -43,7 +43,15 @@ type DistroFile struct {
 // Checks for available updates on OS.
 // Returns "true" if updates available, otherwise "false".
 func SearchForUpdates() bool {
-	d := determineDistro()
+	var d Distro
+
+	isDietPi := determineDietPi(getDistroFiles(DietPi, Identifier))
+	if isDietPi {
+		d = DietPi
+	} else {
+		d = determineDistroByOSRelease(getDistroFiles(All, OSRelease))
+	}
+
 	log.Printf("Distro %v", d.toString())
 
 	updatesAvbl := false
@@ -106,16 +114,21 @@ func SearchForUpdatesWithApt() bool {
 }
 
 // Returns "true" on Dietpi OS, otherwise false
-func determineDistro() Distro {
-	for _, f := range getDistroFiles(DietPi, Identifier) {
+func determineDietPi(df []DistroFile) bool {
+	for _, f := range df {
 		fileExists := determineFile(f.file)
 		if fileExists {
 			log.Println("Identifier file found:", f.file)
-			return DietPi
+			return true
 		}
 	}
 
-	osr := getDistroFiles(All, OSRelease)[0].file
+	return false
+}
+
+// Read /etc/os-release, determine distro and return Distro value
+func determineDistroByOSRelease(df []DistroFile) (distro Distro) {
+	var osr string = df[0].file
 	log.Println(osr)
 
 	osrmap, osrMapExists := readOSRelease(osr)
