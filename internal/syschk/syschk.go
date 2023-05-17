@@ -23,7 +23,7 @@ const (
 )
 
 func (d Distro) toString() string {
-	return []string{"DietPi", "Raspbian", "Debian", "Other"}[d]
+	return []string{"All", "DietPi", "Raspbian", "Debian", "Other"}[d]
 }
 
 type FileUsage int
