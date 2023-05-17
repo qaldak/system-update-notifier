@@ -1,0 +1,14 @@
+2023-05-17T23:15:56.348+0200	warn	logger/logger.go:59	File '%v' not found.[/boot/dietpi.txt]
+2023-05-17T23:15:56.348+0200	warn	logger/logger.go:59	OS not defined: %v[4]
+2023-05-17T23:17:31.542+0200	warn	logger/logger.go:59	File '%s' not found.[/boot/dietpi.txt]
+2023-05-17T23:17:31.542+0200	warn	logger/logger.go:59	OS not defined: %v[4]
+2023-05-17T23:18:11.075+0200	warn	logger/logger.go:59	File %s not found.[/boot/dietpi.txt]
+2023-05-17T23:18:11.075+0200	warn	logger/logger.go:59	OS not defined: %v[4]
+2023-05-17T23:19:01.703+0200	warn	logger/logger.go:59	File [/boot/dietpi.txt] not found.
+2023-05-17T23:19:01.704+0200	warn	logger/logger.go:59	OS not defined: [4]
+2023-05-17T23:20:44.021+0200	warn	logger/logger.go:59	File not found: [47].
+2023-05-17T23:20:44.022+0200	warn	logger/logger.go:59	OS not defined: [4]
+2023-05-17T23:22:05.739+0200	warn	logger/logger.go:59	File not found: [/boot/dietpi.txt].
+2023-05-17T23:22:05.739+0200	warn	logger/logger.go:59	Distro not defined: [Other]
+2023-05-17T23:22:40.076+0200	warn	logger/logger.go:59	File not found: %v. [/boot/dietpi.txt]
+2023-05-17T23:22:40.076+0200	warn	logger/logger.go:59	Distro not defined: %v [Other]
