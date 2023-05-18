@@ -17,14 +17,15 @@ func InitLogger(debug bool) {
 	if err != nil {
 		log.Fatalf("Error initializing logfile. %v", err)
 	}
-	var loggerConfig zap.Config
 
+	var loggerConfig zap.Config
 	if debug {
 		loggerConfig = zap.NewDevelopmentConfig()
 	} else {
 		loggerConfig = zap.NewProductionConfig()
 		loggerConfig.Encoding = "console"
 		loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		loggerConfig.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	}
 
 	loggerConfig.OutputPaths = []string{logfile.Name()}
@@ -32,7 +33,7 @@ func InitLogger(debug bool) {
 
 	logger, err := loggerConfig.Build()
 	if err != nil {
-		log.Fatalf("Error building logger. %v", err)
+		log.Fatalf("Error building zap logger. %v", err)
 	}
 
 	defer logger.Sync()

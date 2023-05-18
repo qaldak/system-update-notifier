@@ -193,7 +193,7 @@ func readOSRelease(file string) (map[string]string, bool) {
 func determineFile(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
-		logger.Warn("File not found: %v.", file)
+		logger.Info("File not found: %v.", file)
 		return false
 	}
 	return true
