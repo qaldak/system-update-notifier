@@ -1,8 +1,8 @@
 builds: 
   - 
     id: "sysup-notifier"
-    main: .cmd/sysup-notifier
-    binary: bin/sysup-notifier
+    main: cmd/sysup-notifier/sysup-notifier.go
+    binary: sysup-notifier/sysup-notifier
     env:
       - CGO_ENABLED=0
     goos:
@@ -17,5 +17,7 @@ builds:
 release:
   prerelease: auto
 
-signs:
-  name_template: "checksums.txt"
+# .goreleaser.yaml
+archives:
+- files:
+  - none*

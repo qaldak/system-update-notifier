@@ -1,5 +1,9 @@
 # system-update-notifier
 
+[![Go Release Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml)
+
+[![Go Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml)
+
 ## Description
 
 Notify to Slack channel if system upgrades on Debian-based Linux are available.<br>
@@ -12,6 +16,13 @@ On Debian-based Linux checking updates by Apt package manager.<br>
 
 
 ## Getting started
+### Download binary
+Sysup-notifier binaries are available for **amd64, arm7 or arm64**. Ready to download from release. <br>
+example: <br>
+```
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_amd64.tar.gz
+```
+
 
 ### Configuration
 
@@ -63,7 +74,7 @@ In case you don't want create a logfile, you can set the option `--log none`. Th
 #### **Go installation**
 For use, Go must be installed on the systems. Otherwise you have to build this code for your platform and run as a binary executable.
 
-#### **Root persmissions**
+#### **Root permissions**
 For checking apt package manager sudo is needed. For this case, you have to use an user with sudo permissions. According your permission settings, you have to enter the password while running the service.<br>
 For Cronjob it is recommended to run the job under root user.
 <br>
