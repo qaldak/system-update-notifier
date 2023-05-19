@@ -2,7 +2,7 @@ builds:
   - 
     id: "sysup-notifier"
     main: cmd/sysup-notifier/sysup-notifier.go
-    binary: bin/sysup-notifier
+    binary: sysup-notifier/
     env:
       - CGO_ENABLED=0
     goos:
