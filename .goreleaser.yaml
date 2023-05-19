@@ -16,3 +16,8 @@ builds:
 
 release:
   prerelease: auto
+
+# .goreleaser.yaml
+archives:
+- files:
+  - none*
