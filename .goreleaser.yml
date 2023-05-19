@@ -1,0 +1,21 @@
+builds: 
+  - 
+    id: "sysup-notifier"
+    main: .cmd/sysup-notifier
+    binary: bin/sysup-notifier
+    env: 
+      - CGO_ENABLED=0
+    goos: 
+      - linux
+    goarch: 
+      - amd64
+      - arm64
+      - arm
+    goarm: 
+      - 7
+
+release: 
+  prerelease: auto
+
+signs: 
+  name_template: "checksums.txt"
