@@ -2,9 +2,10 @@ package pub
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
+
+	"sysup-notifier/internal/utils/logger"
 
 	"github.com/slack-go/slack"
 )
@@ -15,7 +16,6 @@ func SlackMsg() {
 
 	token := os.Getenv("SLACK_AUTH_TOKEN")
 	channelId := os.Getenv("SLACK_CHANNEL_ID")
-	log.Println(token, channelId)
 
 	bot := slack.New(token)
 	_, timestamp, err := bot.PostMessage(
@@ -23,18 +23,18 @@ func SlackMsg() {
 		slack.MsgOptionText(msg, false),
 	)
 	if err != nil {
-		log.Println(err)
+		logger.Warn("Error sending Slack message. %v", err)
 		return
 	}
 
-	log.Printf("Message sent successfully on Channel %s at %s", channelId, timestamp)
+	logger.Debug("Message sent successfully on Channel '%v' at '%v'.", channelId, timestamp)
 }
 
 // Generates message about available system updates.
 func generateMsg() string {
 	h := getHostname()
-	msg := fmt.Sprintf("[%s] System updates available", h)
-	log.Println(msg)
+	msg := fmt.Sprintf("[%v] System updates available", h)
+	logger.Debug("Notification message created. %v", msg)
 	return msg
 }
 
@@ -42,8 +42,7 @@ func generateMsg() string {
 func getHostname() string {
 	h, err := os.Hostname()
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		logger.Fatal("Error determine hostname. %v", err)
 	}
 	return strings.ToLower(h)
 }

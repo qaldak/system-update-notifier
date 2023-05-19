@@ -1,31 +1,62 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"os"
 
 	"sysup-notifier/internal/pub"
 	"sysup-notifier/internal/syschk"
+	"sysup-notifier/internal/utils/logger"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	hasUpdates := syschk.SearchForUpdates()
+
+	if hasUpdates {
+		logger.Debug("Updates available.")
+		pub.SlackMsg()
+	}
+}
+
+func init() {
+	// input args declaration
+	var debug bool
+	var logfile string
+
+	// flags declaration using flag package
+	flag.CommandLine.StringVar(&logfile, "log", "log/sysup-notifier.log", "--log: set path/filename for log.")
+	flag.CommandLine.BoolVar(&debug, "debug", false, "--debug: set loglevel to 'debug'.")
+
+	flag.Parse() // after declaring flags we need to call it
+
+	if isFlagPassed("log") {
+		if logfile == "none" {
+			log.Println("Logfile disabled. Stdout used instead.")
+		}
+	}
+
+	if isFlagPassed("debug") {
+		debug = true
+	}
+
+	// initialize logger
+	logger.InitLogger(logfile, debug)
+
 	// load env
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		logger.Fatal("Error initializing environment variables from '.env'. %v", err)
 	}
+}
 
-	// Todo: input params / start arguments
-	// Todo: logger (Debug, Errors)
-
-	hasUpdates := syschk.SearchForUpdates()
-	log.Println(hasUpdates)
-
-	if hasUpdates {
-		log.Println("Updates available.")
-		pub.SlackMsg()
-	}
+func isFlagPassed(name string) bool {
+	flagFound := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			flagFound = true
+		}
+	})
+	return flagFound
 }

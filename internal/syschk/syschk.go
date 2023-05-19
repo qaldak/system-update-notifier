@@ -2,7 +2,6 @@ package syschk
 
 import (
 	"context"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,6 +9,8 @@ import (
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"sysup-notifier/internal/utils/logger"
 )
 
 type Distro int
@@ -52,13 +53,13 @@ func SearchForUpdates() bool {
 		d = determineDistroByOSRelease(getDistroFiles(All, OSRelease))
 	}
 
-	log.Printf("Distro %v", d.toString())
+	logger.Debug("Distro %v", d.toString())
 
 	updatesAvbl := false
 
 	switch d {
 	case Other:
-		log.Printf("OS not defined: %v", d)
+		logger.Warn("Distro not defined: %v", d.toString())
 	case DietPi:
 		updatesAvbl = SearchForUpdatesOnDietpi()
 	default:
@@ -78,11 +79,11 @@ func SearchForUpdatesOnDietpi() bool {
 	for _, f := range getDistroFiles(DietPi, Updates) {
 		fileExists := determineFile(f.file)
 		if fileExists {
-			log.Println("Update file found:", f.file)
+			logger.Debug("Update file found: %v.", f.file)
 			return true
 		}
 	}
-	log.Println("No update files found")
+	logger.Debug("No update files found on DietPi.")
 	return false
 }
 
@@ -95,18 +96,17 @@ func SearchForUpdatesWithApt() bool {
 
 	err := exec.CommandContext(ctx, "sudo", "apt-get", "-y", "-qq", "update").Run()
 	if err != nil {
-		log.Printf("Error on 'apt-get update': %s", err)
+		logger.Error("Error on 'apt-get update'. %v.", err)
 	}
 
 	cmd := "sudo apt list -qq --upgradable 2> /dev/null | wc -l"
 	c, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
-		log.Printf("Error on '%s': %s", cmd, err)
+		logger.Error("Error on '%v': %v.", cmd, err)
 	}
 
 	if int(c[0]) != 0 {
-		log.Printf("%s updates available.", c)
-
+		logger.Debug("%v updates available.", c)
 		return true
 	}
 
@@ -118,27 +118,25 @@ func determineDietPi(df []DistroFile) bool {
 	for _, f := range df {
 		fileExists := determineFile(f.file)
 		if fileExists {
-			log.Println("Identifier file found:", f.file)
+			logger.Debug("Identifier file found: %v.", f.file)
 			return true
 		}
 	}
-
 	return false
 }
 
 // Read /etc/os-release, determine distro and return Distro value
 func determineDistroByOSRelease(df []DistroFile) (distro Distro) {
 	var osr string = df[0].file
-	log.Println(osr)
 
 	osrmap, osrMapExists := readOSRelease(osr)
 
 	if osrMapExists {
 		osrID := cases.Title(language.Und).String(osrmap["ID"])
-		log.Println(osrID)
+		logger.Debug("os-release ID: %v", osrID)
 
 		osrIDL := cases.Title(language.Und).String(osrmap["ID_LIKE"])
-		log.Println(osrIDL)
+		logger.Debug("os-release ID_LIKE: %v", osrIDL)
 
 		switch osrID {
 		case "Debian":
@@ -163,9 +161,8 @@ func determineDistroByOSRelease(df []DistroFile) (distro Distro) {
 func readOSRelease(file string) (map[string]string, bool) {
 	osmap := make(map[string]string)
 	fc, err := os.ReadFile(file)
-
 	if err != nil {
-		log.Println("/etc/os-release not exists.")
+		logger.Warn("/etc/os-release not exists. %v", err)
 		return osmap, false
 	}
 
@@ -186,7 +183,7 @@ func readOSRelease(file string) (map[string]string, bool) {
 		osmap[k] = v
 	}
 
-	log.Println(osmap)
+	logger.Debug("os-release mapped. %v", osmap)
 	return osmap, true
 }
 
@@ -195,7 +192,7 @@ func readOSRelease(file string) (map[string]string, bool) {
 func determineFile(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
-		log.Printf("File '%s' not found", file)
+		logger.Debug("File not found. %v", file)
 		return false
 	}
 	return true

@@ -3,7 +3,13 @@ package syschk
 import (
 	"reflect"
 	"testing"
+
+	"sysup-notifier/internal/utils/logger"
 )
+
+func init() {
+	logger.InitLogger("../../log/testing-sysup-notifier.log", false)
+}
 
 func Test_getDistroFiles(t *testing.T) {
 	tests := []struct {
@@ -38,6 +44,18 @@ func Test_getDistroFiles(t *testing.T) {
 					distro: DietPi,
 					file:   "/boot/dietpi.txt",
 					usage:  Identifier,
+				},
+			},
+		},
+		{
+			name:   "Exact one OSRelease file found",
+			distro: All,
+			usage:  OSRelease,
+			want: []DistroFile{
+				{
+					distro: All,
+					file:   "/etc/os-release",
+					usage:  OSRelease,
 				},
 			},
 		},
