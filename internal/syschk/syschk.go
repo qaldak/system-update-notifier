@@ -128,18 +128,15 @@ func determineDietPi(df []DistroFile) bool {
 // Read /etc/os-release, determine distro and return Distro value
 func determineDistroByOSRelease(df []DistroFile) (distro Distro) {
 	var osr string = df[0].file
-	if (osr != "/etc/os-release") {
-		logger.Fatal("No os-release file found. %s", osr)
-	}
 
 	osrmap, osrMapExists := readOSRelease(osr)
 
 	if osrMapExists {
 		osrID := cases.Title(language.Und).String(osrmap["ID"])
-		logger.Debug("os-release ID: %v.", osrID)
+		logger.Debug("os-release ID: %v", osrID)
 
 		osrIDL := cases.Title(language.Und).String(osrmap["ID_LIKE"])
-		logger.Debug("os-release ID_LIKE: %v.", osrIDL)
+		logger.Debug("os-release ID_LIKE: %v", osrIDL)
 
 		switch osrID {
 		case "Debian":
@@ -195,7 +192,7 @@ func readOSRelease(file string) (map[string]string, bool) {
 func determineFile(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
-		logger.Info("File not found. %v", file)
+		logger.Debug("File not found. %v", file)
 		return false
 	}
 	return true

@@ -47,6 +47,18 @@ func Test_getDistroFiles(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:   "Exact one OSRelease file found",
+			distro: All,
+			usage:  OSRelease,
+			want: []DistroFile{
+				{
+					distro: All,
+					file:   "/etc/os-release",
+					usage:  OSRelease,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
