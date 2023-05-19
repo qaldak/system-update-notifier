@@ -16,6 +16,3 @@ builds:
 
 release:
   prerelease: auto
-
-signs:
-  - artifacts: checksum
