@@ -52,7 +52,10 @@ Use Cronjob of root. For checking apt package manager `sudo` is needed/used.<br>
 
 
 #### **Logfile**
-Logfile is created in the subdirectory `log/` of the working directory.
+By default, Logfile is created in the subdirectory `log/` of the working directory.<br>
+Logrotation is not supported. Use an external program like `logrotate`.<br>
+<br>
+In case you don't want create a logfile, you can set the option `--log none`. Then no logfile will be created, but `Stdout` is used.
 
 <br>
 

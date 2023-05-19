@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	logger.InitLogger("../../log/testing-sysup-notifier.log", false)
+	logger.InitLogger("none", false)
 }
 
 func Test_getDistroFiles(t *testing.T) {

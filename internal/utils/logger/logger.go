@@ -10,22 +10,26 @@ import (
 )
 
 var Sugar *zap.SugaredLogger
+var logFile *os.File
 
-func InitLogger(logpath string, debug bool) {
-	logDir := filepath.Dir(logpath)
+func InitLogger(logPath string, debug bool) {
+	logDir := filepath.Dir(logPath)
 
-	if _, err := os.Stat(logDir); os.IsNotExist(err){
-		errDir := os.MkdirAll(logDir, 0755)
-		if errDir != nil {
-			log.Printf("Error creating log directory. %v", errDir)
-		}
-	} 
-
-	logfile, err := os.OpenFile(logpath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatalf("Error initializing logfile. %v", err)
-	}	
+	if (logPath != "none") {
+		if _, err := os.Stat(logDir); os.IsNotExist(err){
+			errDir := os.MkdirAll(logDir, 0755)
+			if errDir != nil {
+				log.Printf("Error creating log directory. %v", errDir)
+			}
+		} 
 	
+		var err error
+		logFile, err = os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatalf("Error initializing logfile. %v", err)
+		}		
+	}
+
 	var loggerConfig zap.Config
 	if debug {
 		loggerConfig = zap.NewDevelopmentConfig()
@@ -36,8 +40,15 @@ func InitLogger(logpath string, debug bool) {
 		loggerConfig.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	}
 
-	loggerConfig.OutputPaths = []string{logfile.Name()}
-	loggerConfig.ErrorOutputPaths = []string{"stderr", logfile.Name()}
+	if (logPath != "none") {
+		loggerConfig.OutputPaths = []string{logFile.Name()}
+		loggerConfig.ErrorOutputPaths = []string{"stderr", logFile.Name()}	
+	} else {
+		loggerConfig.OutputPaths = []string{"stdout"}
+		loggerConfig.ErrorOutputPaths = []string{"stderr"}
+	
+	}
+
 
 	logger, err := loggerConfig.Build()
 	if err != nil {
