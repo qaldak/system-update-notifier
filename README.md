@@ -1,5 +1,9 @@
 # system-update-notifier
 
+[![Go Release Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml)
+
+[![Go Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml)
+
 ## Description
 
 Notify to Slack channel if system upgrades on Debian-based Linux are available.<br>
