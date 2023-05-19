@@ -18,4 +18,4 @@ release:
   prerelease: auto
 
 signs:
-  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  - artifacts: checksum
