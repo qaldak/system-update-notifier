@@ -34,7 +34,7 @@ func SlackMsg() {
 func generateMsg() string {
 	h := getHostname()
 	msg := fmt.Sprintf("[%v] System updates available", h)
-	logger.Debug("Notification message created. %v.", msg)
+	logger.Debug("Notification message created. %v", msg)
 	return msg
 }
 

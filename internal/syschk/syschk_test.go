@@ -3,7 +3,13 @@ package syschk
 import (
 	"reflect"
 	"testing"
+
+	"sysup-notifier/internal/utils/logger"
 )
+
+func init() {
+	logger.InitLogger("../../log/testing-sysup-notifier.log", false)
+}
 
 func Test_getDistroFiles(t *testing.T) {
 	tests := []struct {

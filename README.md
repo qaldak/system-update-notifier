@@ -29,11 +29,11 @@ The `.env` file must be **located in the working directory**.
 
 #### **Command line**
 
-`go run cmd/sysup-notifier/sysup-notifier.go [-nl|--nolog] [-d|--debug]`<br>
+`go run cmd/sysup-notifier/sysup-notifier.go [--log /path/to/logfile.log] [--debug]`<br>
 
 or as binary executable: <br>
 
-`./sysup-notifier [-nl|--nolog] [-d|--debug]`
+`./sysup-notifier [--log /path/to/logfile.log] [--debug]`
 
 optional parameter:
 
@@ -42,11 +42,11 @@ optional parameter:
 
 #### **Cronjob**
 
-`05 0 * * * cd <CWD> ; go run cmd/sysup-notifier/sysup-notifier.go [-nl|--nolog] [-d|--debug]` <br>
+`05 0 * * * cd <CWD> ; go run cmd/sysup-notifier/sysup-notifier.go [--log /path/to/logfile.log] [--debug]` <br>
 
 or as binary executable: <br>
 
-`05 0 * * * cd <CWD> ; sysup-notifier [-nl|--nolog] [-d|--debug]`
+`05 0 * * * cd <CWD> ; sysup-notifier [--log /path/to/logfile.log] [--debug]`
 
 Use Cronjob of root. For checking apt package manager `sudo` is needed/used.<br>
 

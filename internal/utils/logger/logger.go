@@ -3,6 +3,7 @@ package logger
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -10,14 +11,21 @@ import (
 
 var Sugar *zap.SugaredLogger
 
-func InitLogger(debug bool) {
-	// Todo: create Path and file if not exists
+func InitLogger(logpath string, debug bool) {
+	logDir := filepath.Dir(logpath)
 
-	logfile, err := os.OpenFile("sysup-notifier.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666)
+	if _, err := os.Stat(logDir); os.IsNotExist(err){
+		errDir := os.MkdirAll(logDir, 0755)
+		if errDir != nil {
+			log.Printf("Error creating log directory. %v", errDir)
+		}
+	} 
+
+	logfile, err := os.OpenFile(logpath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatalf("Error initializing logfile. %v", err)
-	}
-
+	}	
+	
 	var loggerConfig zap.Config
 	if debug {
 		loggerConfig = zap.NewDevelopmentConfig()
