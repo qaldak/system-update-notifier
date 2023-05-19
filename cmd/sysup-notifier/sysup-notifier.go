@@ -26,7 +26,7 @@ func init() {
 	var logfile string
 
 	// flags declaration using flag package
-	flag.CommandLine.StringVar(&logfile, "log", "log/sysup-notifier.log", "--log: set path/filename for log.")
+	flag.CommandLine.StringVar(&logfile, "log", "log/sysup-notifier.log", "--log: set path/filename for log or 'none' to disable logfile and use Stdout instead.")
 	flag.CommandLine.BoolVar(&debug, "debug", false, "--debug: set loglevel to 'debug'.")
 
 	flag.Parse() // after declaring flags we need to call it
