@@ -1,6 +1,6 @@
 # system-update-notifier
 
-[![Go Release Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml)
+[![Go Release Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml/badge.svg)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-release-builder.yml)
 
 [![Go Builder](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml/badge.svg?branch=main)](https://github.com/qaldak/system-update-notifier/actions/workflows/go-builder.yml)
 
