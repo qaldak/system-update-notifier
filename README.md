@@ -19,11 +19,21 @@ On Debian-based Linux checking updates by Apt package manager.<br>
 
 ### Download binary
 
-Sysup-notifier binaries are available for **amd64, arm7 or arm64**. Ready to download from release. <br>
-example: <br>
+Sysup-notifier binaries are available for **amd64, armv7 or arm64**. Ready to download from release. <br>
+#### **amd64**
 
 ```
 wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_amd64.tar.gz
+```
+
+#### **arm64**
+```
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_arm64.tar.gz
+```
+
+#### **armv7**
+```
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_armv7.tar.gz
 ```
 
 ### Configuration
@@ -61,7 +71,7 @@ optional parameter:
 
 or as binary executable: <br>
 
-`05 0 * * * cd <CWD> ; sysup-notifier [--log /path/to/logfile.log] [--debug]`
+`05 0 * * * cd <CWD> ; ./sysup-notifier [--log /path/to/logfile.log] [--debug]`
 
 Use Cronjob of root. For checking apt package manager `sudo` is needed/used.<br>
 
