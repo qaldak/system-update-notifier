@@ -2,9 +2,8 @@ package syschk
 
 import (
 	"reflect"
-	"testing"
-
 	"sysup-notifier/internal/utils/logger"
+	"testing"
 )
 
 func init() {
@@ -251,6 +250,79 @@ func Test_determineDistroByOSRelease(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotDistro := determineDistroByOSRelease(tt.args.df); !reflect.DeepEqual(gotDistro, tt.wantDistro) {
 				t.Errorf("determineDistroByOSRelease() = %v, want %v", gotDistro, tt.wantDistro)
+			}
+		})
+	}
+}
+
+func TestSearchForUpdatesOnDietPi(t *testing.T) {
+	type args struct {
+		df []DistroFile
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Update file(s) found",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/.update_available",
+						usage:  Updates,
+					},
+					{
+						distro: DietPi,
+						file:   "../../testdata/.apt_updates",
+						usage:  Updates,
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "Second update file found",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/.foo",
+						usage:  Updates,
+					},
+					{
+						distro: DietPi,
+						file:   "../../testdata/.apt_updates",
+						usage:  Updates,
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "Update file(s) not exists",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/.foo",
+						usage:  Updates,
+					},
+					{
+						distro: DietPi,
+						file:   "../../testdata/.bar",
+						usage:  Updates,
+					},
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SearchForUpdatesOnDietPi(tt.args.df); got != tt.want {
+				t.Errorf("SearchForUpdatesOnDietPi() = %v, want %v", got, tt.want)
 			}
 		})
 	}
