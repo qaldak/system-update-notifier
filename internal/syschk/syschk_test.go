@@ -2,8 +2,9 @@ package syschk
 
 import (
 	"reflect"
-	"sysup-notifier/internal/utils/logger"
 	"testing"
+
+	"sysup-notifier/internal/utils/logger"
 )
 
 func init() {
@@ -255,17 +256,19 @@ func Test_determineDistroByOSRelease(t *testing.T) {
 	}
 }
 
-func TestSearchForUpdatesOnDietPi(t *testing.T) {
+func Test_searchForUpdatesOnDietPi(t *testing.T) {
 	type args struct {
 		df []DistroFile
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name            string
+		args            args
+		wantUpdateAvbl  bool
+		wantNewVersion  string
+		wantCntAptPacks string
 	}{
 		{
-			name: "Update file(s) found",
+			name: "New DietPi verison and Apt packages available",
 			args: args{
 				[]DistroFile{
 					{
@@ -280,10 +283,32 @@ func TestSearchForUpdatesOnDietPi(t *testing.T) {
 					},
 				},
 			},
-			want: true,
+			wantUpdateAvbl:  true,
+			wantNewVersion:  "vFoo.bar",
+			wantCntAptPacks: "4",
 		},
 		{
-			name: "Second update file found",
+			name: "New DietPi verison available",
+			args: args{
+				[]DistroFile{
+					{
+						distro: DietPi,
+						file:   "../../testdata/.update_available",
+						usage:  Updates,
+					},
+					{
+						distro: DietPi,
+						file:   "../../testdata/.foo",
+						usage:  Updates,
+					},
+				},
+			},
+			wantUpdateAvbl:  true,
+			wantNewVersion:  "vFoo.bar",
+			wantCntAptPacks: "",
+		},
+		{
+			name: "Update for Apt packages available",
 			args: args{
 				[]DistroFile{
 					{
@@ -298,10 +323,12 @@ func TestSearchForUpdatesOnDietPi(t *testing.T) {
 					},
 				},
 			},
-			want: true,
+			wantUpdateAvbl:  true,
+			wantNewVersion:  "",
+			wantCntAptPacks: "4",
 		},
 		{
-			name: "Update file(s) not exists",
+			name: "No update files found",
 			args: args{
 				[]DistroFile{
 					{
@@ -316,13 +343,23 @@ func TestSearchForUpdatesOnDietPi(t *testing.T) {
 					},
 				},
 			},
-			want: false,
+			wantUpdateAvbl:  false,
+			wantNewVersion:  "",
+			wantCntAptPacks: "",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SearchForUpdatesOnDietPi(tt.args.df); got != tt.want {
-				t.Errorf("SearchForUpdatesOnDietPi() = %v, want %v", got, tt.want)
+			gotUpdateAvbl, gotNewVersion, gotCntAptPacks := searchForUpdatesOnDietPi(tt.args.df)
+
+			if gotUpdateAvbl != tt.wantUpdateAvbl {
+				t.Errorf("searchForUpdatesOnDietPi(): update availabe = %v, want %v", gotUpdateAvbl, tt.wantUpdateAvbl)
+			}
+			if gotNewVersion != tt.wantNewVersion {
+				t.Errorf("searchForUpdatesOnDietPi(): new DietPi version = %v, want %v", gotNewVersion, tt.wantNewVersion)
+			}
+			if gotCntAptPacks != tt.wantCntAptPacks {
+				t.Errorf("searchForUpdatesOnDietPi(): counter Apt updates = %v, want %v", gotCntAptPacks, tt.wantCntAptPacks)
 			}
 		})
 	}
