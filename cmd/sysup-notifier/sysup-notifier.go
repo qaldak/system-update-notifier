@@ -12,7 +12,8 @@ import (
 )
 
 func main() {
-	hasUpdates := syschk.SearchForUpdates()
+	hasUpdates, newDietPiVerson, cntAptPacks := syschk.SearchForUpdates()
+	logger.Debug("Updates available: %v", hasUpdates, newDietPiVerson, cntAptPacks)
 
 	if hasUpdates {
 		logger.Debug("Updates available.")

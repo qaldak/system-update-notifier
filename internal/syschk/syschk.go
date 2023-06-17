@@ -43,7 +43,7 @@ type DistroFile struct {
 
 // Checks for available updates on OS.
 // Returns "true" if updates available, otherwise "false".
-func SearchForUpdates() bool {
+func SearchForUpdates() (updatesAvbl bool, newVersion string, cntAptPacks string) {
 	var d Distro
 
 	isDietPi := determineDietPi(getDistroFiles(DietPi, Identifier))
@@ -55,25 +55,21 @@ func SearchForUpdates() bool {
 
 	logger.Debug("Distro %v", d.toString())
 
-	updatesAvbl := false
-	newVersion := ""
-	cntAptPacks := ""
+	updatesAvbl = false
+	newVersion = ""
+	cntAptPacks = ""
 
 	switch d {
 	case Other:
 		logger.Warn("Distro not defined: %v", d.toString())
 	case DietPi:
 		updatesAvbl, newVersion, cntAptPacks = searchForUpdatesOnDietPi(getDistroFiles(DietPi, Updates))
-		logger.Debug("DietPi updates available: %v, new DietPi version: %v, APT packages updates: %v", updatesAvbl, newVersion, cntAptPacks)
+		logger.Debug("DietPi updates available: %v", updatesAvbl, newVersion, cntAptPacks)
 	default:
 		updatesAvbl = SearchForUpdatesWithApt()
 	}
 
-	if updatesAvbl {
-		return true
-	} else {
-		return false
-	}
+	return
 }
 
 // Checks whether updates are available for Dietpi operating system.
@@ -95,12 +91,12 @@ func searchForUpdatesOnDietPi(df []DistroFile) (updatesAvbl bool, newVersion str
 			}
 
 			if strings.Contains(f.file, ".update_available") {
-				newVersion = string(fc)
+				newVersion = strings.Trim(string(fc), "\n") // remove new line "\n"
 				logger.Debug("new DietPi version available: %v.", newVersion)
 			}
 
 			if strings.Contains(f.file, ".apt_updates") {
-				cntAptPacks = string(fc)
+				cntAptPacks = strings.Trim(string(fc), "\n") // remove new line "\n"
 				logger.Debug("Updates for APT packages available: %v.", cntAptPacks)
 			}
 
@@ -232,13 +228,15 @@ func getDistroFiles(d Distro, usage FileUsage) []DistroFile {
 	file := []DistroFile{
 		{
 			distro: DietPi,
-			file:   "/run/dietpi/.update_available",
-			usage:  Updates,
+			// file:   "/run/dietpi/.update_available",
+			file:  "/tmp/.update_available",
+			usage: Updates,
 		},
 		{
 			distro: DietPi,
-			file:   "/run/dietpi/.apt_updates",
-			usage:  Updates,
+			// file:   "/run/dietpi/.apt_updates",
+			file:  "/tmp/.apt_updates",
+			usage: Updates,
 		},
 		{
 			distro: DietPi,
