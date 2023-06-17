@@ -61,7 +61,7 @@ func SearchForUpdates() bool {
 	case Other:
 		logger.Warn("Distro not defined: %v", d.toString())
 	case DietPi:
-		updatesAvbl = SearchForUpdatesOnDietpi()
+		updatesAvbl = SearchForUpdatesOnDietPi(getDistroFiles(DietPi, Updates))
 	default:
 		updatesAvbl = SearchForUpdatesWithApt()
 	}
@@ -75,8 +75,8 @@ func SearchForUpdates() bool {
 
 // Checks whether updates are available for Dietpi operating system.
 // Returns boolean value "true" if updates available, otherwise "false".
-func SearchForUpdatesOnDietpi() bool {
-	for _, f := range getDistroFiles(DietPi, Updates) {
+func SearchForUpdatesOnDietPi(df []DistroFile) bool {
+	for _, f := range df {
 		fileExists := determineFile(f.file)
 		if fileExists {
 			logger.Debug("Update file found: %v.", f.file)
