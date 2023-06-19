@@ -228,14 +228,14 @@ func getDistroFiles(d Distro, usage FileUsage) []DistroFile {
 	file := []DistroFile{
 		{
 			distro: DietPi,
-			// file:   "/run/dietpi/.update_available",
-			file:  "/tmp/.update_available",
+			file:   "/run/dietpi/.update_available",
+			// file:  "/tmp/.update_available", // Todo: delete
 			usage: Updates,
 		},
 		{
 			distro: DietPi,
-			// file:   "/run/dietpi/.apt_updates",
-			file:  "/tmp/.apt_updates",
+			file:   "/run/dietpi/.apt_updates",
+			// file:  "/tmp/.apt_updates", // Todo: delete
 			usage: Updates,
 		},
 		{
