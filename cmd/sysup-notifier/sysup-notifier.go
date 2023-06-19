@@ -12,12 +12,12 @@ import (
 )
 
 func main() {
-	hasUpdates, newDietPiVerson, cntAptPacks := syschk.SearchForUpdates()
-	logger.Debug("Updates available: %v", hasUpdates, newDietPiVerson, cntAptPacks)
+	hasUpdates, newVersion, cntAptPacks := syschk.SearchForUpdates()
+	logger.Debug("Updates available: %v", hasUpdates, newVersion, cntAptPacks)
 
 	if hasUpdates {
-		logger.Debug("Updates available.")
-		pub.SlackMsg()
+		logger.Debug("Updates available. Publish Slack message...")
+		pub.SlackMsg(newVersion, cntAptPacks)
 	}
 }
 

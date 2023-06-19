@@ -11,8 +11,8 @@ import (
 )
 
 // Generates and sends message to Slack.
-func SlackMsg() {
-	msg := generateMsg()
+func SlackMsg(newVersion string, cntAptPacks string) {
+	msg := generateMsg(newVersion, cntAptPacks)
 
 	token := os.Getenv("SLACK_AUTH_TOKEN")
 	channelId := os.Getenv("SLACK_CHANNEL_ID")
@@ -31,11 +31,24 @@ func SlackMsg() {
 }
 
 // Generates message about available system updates.
-func generateMsg() string {
+func generateMsg(newVersion string, cntAptPacks string) (msg string) {
 	h := getHostname()
-	msg := fmt.Sprintf("[%v] System updates available", h)
+	v := ""
+	a := ""
+
+	if newVersion != "" {
+		v = (" New version: " + newVersion + ",")
+		logger.Debug("new version msg: %v", v)
+	}
+
+	if cntAptPacks != "" {
+		a = (" APT package updates: " + cntAptPacks)
+		logger.Debug("APT updates: %v", a)
+	}
+
+	msg = fmt.Sprintf("[%v] System updates available.%v%v", h, v, a)
 	logger.Debug("Notification message created. %v", msg)
-	return msg
+	return
 }
 
 // Get hostname from operating system.
