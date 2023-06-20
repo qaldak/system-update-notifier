@@ -38,15 +38,15 @@ func generateMsg(newVersion string, cntAptPacks string) (msg string) {
 
 	if newVersion != "" {
 		v = (" New version: " + newVersion + ",")
-		logger.Debug("new version msg: %v", v)
+		logger.Debug(v)
 	}
 
 	if cntAptPacks != "" {
 		a = (" APT package updates: " + cntAptPacks)
-		logger.Debug("APT updates: %v", a)
+		logger.Debug(a)
 	}
 
-	msg = fmt.Sprintf("[%v] System updates available.%v%v", h, v, a)
+	msg = fmt.Sprintf("[%s] System updates available.%s%s", h, v, a)
 	logger.Debug("Notification message created. %v", msg)
 	return
 }

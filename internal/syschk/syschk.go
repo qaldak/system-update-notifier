@@ -133,7 +133,7 @@ func SearchForUpdatesWithApt() (updatesAvbl bool, cntAptPacks string) {
 	}
 
 	if int(c[0]) != 0 {
-		logger.Debug("%v updates available.", string(c[0]))
+		logger.Debug("%s APT package updates available.", string(c[0]))
 		updatesAvbl = true
 		cntAptPacks = string(c[0])
 	}
