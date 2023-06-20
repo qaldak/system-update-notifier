@@ -138,6 +138,10 @@ func SearchForUpdatesWithApt() (updatesAvbl bool, cntAptPacks string) {
 		cntAptPacks = string(c[0])
 	}
 
+	if !updatesAvbl {
+		logger.Debug("No updates found for APT packages.")
+	}
+
 	return
 }
 
