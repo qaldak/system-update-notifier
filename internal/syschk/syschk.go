@@ -66,7 +66,7 @@ func SearchForUpdates() (updatesAvbl bool, newVersion string, cntAptPacks string
 		updatesAvbl, newVersion, cntAptPacks = searchForUpdatesOnDietPi(getDistroFiles(DietPi, Updates))
 		logger.Debug("DietPi updates available: %v", updatesAvbl, newVersion, cntAptPacks)
 	default:
-		updatesAvbl = SearchForUpdatesWithApt()
+		updatesAvbl, cntAptPacks = SearchForUpdatesWithApt()
 	}
 
 	return
@@ -113,7 +113,10 @@ func searchForUpdatesOnDietPi(df []DistroFile) (updatesAvbl bool, newVersion str
 
 // Checks whether updates are available with APT package manager.
 // Returns boolean value "true" if updates available, otherwise "false".
-func SearchForUpdatesWithApt() bool {
+func SearchForUpdatesWithApt() (updatesAvbl bool, cntAptPacks string) {
+	updatesAvbl = false
+	cntAptPacks = ""
+
 	// Set timeout 90 sec for apt-get update
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
@@ -131,10 +134,11 @@ func SearchForUpdatesWithApt() bool {
 
 	if int(c[0]) != 0 {
 		logger.Debug("%v updates available.", c)
-		return true
+		updatesAvbl = true
+		cntAptPacks = string(c[0])
 	}
 
-	return false
+	return
 }
 
 // Returns "true" on Dietpi OS, otherwise false
