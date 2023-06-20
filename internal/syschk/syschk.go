@@ -43,7 +43,7 @@ type DistroFile struct {
 
 // Checks for available updates on OS.
 // Returns "true" if updates available, otherwise "false".
-func SearchForUpdates() bool {
+func SearchForUpdates() (updatesAvbl bool, newVersion string, cntAptPacks string) {
 	var d Distro
 
 	isDietPi := determineDietPi(getDistroFiles(DietPi, Identifier))
@@ -55,41 +55,68 @@ func SearchForUpdates() bool {
 
 	logger.Debug("Distro %v", d.toString())
 
-	updatesAvbl := false
+	updatesAvbl = false
+	newVersion = ""
+	cntAptPacks = ""
 
 	switch d {
 	case Other:
 		logger.Warn("Distro not defined: %v", d.toString())
 	case DietPi:
-		updatesAvbl = SearchForUpdatesOnDietPi(getDistroFiles(DietPi, Updates))
+		updatesAvbl, newVersion, cntAptPacks = searchForUpdatesOnDietPi(getDistroFiles(DietPi, Updates))
+		logger.Debug("DietPi updates available: %v", updatesAvbl, newVersion, cntAptPacks)
 	default:
-		updatesAvbl = SearchForUpdatesWithApt()
+		updatesAvbl, cntAptPacks = SearchForUpdatesWithApt()
 	}
 
-	if updatesAvbl {
-		return true
-	} else {
-		return false
-	}
+	return
 }
 
 // Checks whether updates are available for Dietpi operating system.
-// Returns boolean value "true" if updates available, otherwise "false".
-func SearchForUpdatesOnDietPi(df []DistroFile) bool {
+// If updates available return boolean "true" incl optional additional update informations (newVersion, cntAptPacks)
+// If no updates available return boolean "false"
+func searchForUpdatesOnDietPi(df []DistroFile) (updatesAvbl bool, newVersion string, cntAptPacks string) {
+	updatesAvbl = false
+	newVersion = ""
+	cntAptPacks = ""
+
 	for _, f := range df {
 		fileExists := determineFile(f.file)
 		if fileExists {
 			logger.Debug("Update file found: %v.", f.file)
-			return true
+
+			fc, err := os.ReadFile(f.file)
+			if err != nil {
+				logger.Warn("Error while read file: %v, Error: %v", f.file, err)
+			}
+
+			if strings.Contains(f.file, ".update_available") {
+				newVersion = strings.Trim(string(fc), "\n") // remove new line "\n"
+				logger.Debug("new DietPi version available: %v.", newVersion)
+			}
+
+			if strings.Contains(f.file, ".apt_updates") {
+				cntAptPacks = strings.Trim(string(fc), "\n") // remove new line "\n"
+				logger.Debug("Updates for APT packages available: %v.", cntAptPacks)
+			}
+
+			updatesAvbl = true
 		}
 	}
-	logger.Debug("No update files found on DietPi.")
-	return false
+
+	if !updatesAvbl {
+		logger.Debug("No update files found on DietPi.")
+	}
+
+	return
 }
 
 // Checks whether updates are available with APT package manager.
 // Returns boolean value "true" if updates available, otherwise "false".
-func SearchForUpdatesWithApt() bool {
+func SearchForUpdatesWithApt() (updatesAvbl bool, cntAptPacks string) {
+	updatesAvbl = false
+	cntAptPacks = ""
+
 	// Set timeout 90 sec for apt-get update
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
@@ -105,12 +132,17 @@ func SearchForUpdatesWithApt() bool {
 		logger.Error("Error on '%v': %v.", cmd, err)
 	}
 
-	if int(c[0]) != 0 {
-		logger.Debug("%v updates available.", c)
-		return true
+	if string(c[0]) != "0" {
+		logger.Debug("%s APT package updates available.", string(c[0]))
+		updatesAvbl = true
+		cntAptPacks = string(c[0])
 	}
 
-	return false
+	if !updatesAvbl {
+		logger.Debug("No updates found for APT packages.")
+	}
+
+	return
 }
 
 // Returns "true" on Dietpi OS, otherwise false
