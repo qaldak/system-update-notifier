@@ -23,17 +23,17 @@ Sysup-notifier binaries are available for **amd64, armv7 or arm64**. Ready to do
 #### **amd64**
 
 ```
-wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_amd64.tar.gz
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.1.1/system-update-notifier_1.1.1_linux_amd64.tar.gz
 ```
 
 #### **arm64**
 ```
-wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_arm64.tar.gz
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.1.1/system-update-notifier_1.1.1_linux_arm64.tar.gz
 ```
 
 #### **armv7**
 ```
-wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.0.0/system-update-notifier_1.0.0_linux_armv7.tar.gz
+wget -c https://github.com/qaldak/system-update-notifier/releases/download/1.1.1/system-update-notifier_1.1.1_linux_armv7.tar.gz
 ```
 
 ### Configuration
