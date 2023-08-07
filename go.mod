@@ -13,5 +13,5 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1
 	go.uber.org/zap v1.24.0
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.12.0
 )
