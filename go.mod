@@ -2,7 +2,7 @@ module sysup-notifier
 
 go 1.20
 
-require github.com/slack-go/slack v0.12.2
+require github.com/slack-go/slack v0.12.3
 
 require go.uber.org/multierr v1.10.0 // indirect
 
