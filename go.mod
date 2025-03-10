@@ -1,6 +1,8 @@
 module sysup-notifier
 
-go 1.20
+go 1.23.0
+
+toolchain go1.24.1
 
 require github.com/slack-go/slack v0.16.0
 
