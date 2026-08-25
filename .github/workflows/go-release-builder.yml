@@ -22,6 +22,16 @@ jobs:
         uses: actions/setup-go@v7
         with:
           go-version: stable
+          
+      - name: Debug Secret Presence
+        run: |
+          if [ -z "${{ secrets.RELEASE_TOKEN }}" ]; then
+            echo "RELEASE_TOKEN ist LEER"
+          else
+            echo "RELEASE_TOKEN ist gesetzt, Länge: ${#RELEASE_TOKEN}"
+          fi
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
       - name: GoReleaser Action
         uses: goreleaser/goreleaser-action@v7
