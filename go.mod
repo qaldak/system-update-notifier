@@ -1,6 +1,6 @@
 module sysup-notifier
 
-go 1.25.0
+go 1.26.0
 
 require github.com/slack-go/slack v0.29.0
 
@@ -10,5 +10,5 @@ require (
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/joho/godotenv v1.5.1
 	go.uber.org/zap v1.28.0
-	golang.org/x/text v0.41.0
+	golang.org/x/text v0.42.0
 )
