@@ -1,9 +1,22 @@
 name: Go Release Builder
 
+# Builds the binaries with GoReleaser and attaches them to the GitHub release of a tag.
+# Normally called by release.yml after semantic-release created a new version.
+# Can be started manually (Actions -> Go Release Builder -> Run workflow) to
+# re-build the assets of an existing tag, e.g. after a failed run.
 on:
-  push:
-    tags:
-      - "*"
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag to build, e.g. 1.2.27"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build, e.g. 1.2.27"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,28 +29,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
-          go-version: stable
-          
-      - name: Debug Secret Presence
-        run: |
-          if [ -z "${{ secrets.RELEASE_TOKEN }}" ]; then
-            echo "RELEASE_TOKEN ist LEER"
-          else
-            echo "RELEASE_TOKEN ist gesetzt, Länge: ${#RELEASE_TOKEN}"
-          fi
-        env:
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          go-version-file: go.mod
 
       - name: GoReleaser Action
         uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
-          version: ${{ env.GITHUB_REF_NAME }}
+          version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}

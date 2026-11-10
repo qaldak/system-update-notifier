@@ -102,6 +102,31 @@ For Cronjob: test first user settings or run the job under root user.
 Contributions are welcome!<br>
 <br>
 
+### Branches and commits
+
+Branch names get a descriptive prefix: `feature/`, `fix/`, `build/`, `chore/`, `docs/`, `tests/`, ...
+
+Releases are created **automatically** when a PR is merged into `main`
+([release workflow](.github/workflows/release.yml), [semantic-release](https://semantic-release.gitbook.io/)).
+The next version is derived from the [Conventional Commits](https://www.conventionalcommits.org/) message,
+which is the **PR title** when using *Squash and merge*:
+
+| Message | Release |
+|---|---|
+| `fix: ...`, `perf: ...` | patch (1.2.26 → 1.2.27) |
+| `feat: ...` | minor (1.2.26 → 1.3.0) |
+| `feat!: ...` or footer `BREAKING CHANGE: ...` | major (1.2.26 → 2.0.0) |
+| `build(deps): ...`, or any type with scope `security`, e.g. `chore(security): ...` | patch |
+| other `build:`, `chore:`, `ci:`, `docs:`, `test:`, `refactor:`, `style:` | no release |
+
+Security fixes should use `fix(security): ...`; the `security` scope guarantees a release whatever the type.
+
+After a release is created, GoReleaser builds the binaries and attaches them to it.
+
+The Go toolchain is pinned in `go.mod` (`toolchain` line) and used by all workflows. Every Monday a workflow
+([go-toolchain-update](.github/workflows/go-toolchain-update.yml)) opens a PR `build(deps): bump Go toolchain to ...`
+if a newer Go version exists. Merging it creates a patch release, so Go standard library security fixes reach the binaries.
+
 ## Licence
 
 Unless otherwise specified, all code is released under the [MIT License (MIT)](LICENSE).<br>

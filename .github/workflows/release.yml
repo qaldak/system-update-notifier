@@ -1,0 +1,90 @@
+# Automatic semantic release.
+#
+# On every push to main (i.e. every merged PR):
+#   1. build + test
+#   2. semantic-release inspects the commits since the last tag (Conventional Commits),
+#      calculates the next version, creates the tag and the GitHub release (with notes)
+#   3. only if a new release was published: GoReleaser builds the binaries and attaches
+#      them to that release (see go-release-builder.yml)
+#
+# Version bump rules (config: .releaserc.json):
+#   fix: / perf:                        -> patch (1.2.26 -> 1.2.27)
+#   feat:                               -> minor (1.2.26 -> 1.3.0)
+#   feat!: / "BREAKING CHANGE:" footer  -> major (1.2.26 -> 2.0.0)
+#   build:, chore:, ci:, docs:, test:, refactor:, style: -> no release
+
+name: Release
+
+on:
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+  semantic-release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_release: ${{ steps.release.outputs.new_release }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Run semantic-release
+        id: release
+        env:
+          # A PAT (RELEASE_TOKEN) is optional; GITHUB_TOKEN is sufficient. Tags pushed with
+          # either token do not trigger other workflows, so the build is chained below.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          # Install locally: semantic-release resolves its bundled plugins relative to the cwd
+          npm install --no-save --no-package-lock --no-audit --no-fund semantic-release@25
+          npx semantic-release
+          # Resolve the tag semantic-release created on this commit (if any)
+          tag="$(git tag --points-at HEAD | head -n1 || true)"
+          if [ -n "$tag" ]; then
+            echo "new_release=true" >> "$GITHUB_OUTPUT"
+            echo "version=$tag" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_release=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-release:
+    needs: semantic-release
+    if: needs.semantic-release.outputs.new_release == 'true'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/go-release-builder.yml
+    with:
+      tag: ${{ needs.semantic-release.outputs.version }}
+    secrets: inherit
