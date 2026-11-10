@@ -1,0 +1,57 @@
+# Keeps the pinned Go toolchain (go.mod "toolchain" line) up to date.
+#
+# Why: the binaries are statically linked, so Go standard library security fixes only reach
+# users with a new release. All workflows build with the toolchain from go.mod. This workflow
+# opens a PR "build(deps): bump Go toolchain to ..."; merging it creates a patch release via
+# semantic-release (see .releaserc.json: build(deps) -> patch).
+#
+# The "go" directive (minimum Go version for users building from source) is not touched.
+#
+# Token: with the default GITHUB_TOKEN the PR is created, but CI checks do not run on it and the
+# repo setting "Allow GitHub Actions to create and approve pull requests" must be enabled.
+# Providing a PAT as RELEASE_TOKEN (contents + pull requests: write) avoids both limitations.
+
+name: Go Toolchain Update
+
+on:
+  schedule:
+    - cron: "17 5 * * 1" # Mondays 05:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-toolchain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Bump toolchain to latest stable
+        run: go get toolchain@latest
+
+      - name: Show toolchain
+        id: toolchain
+        run: |
+          version="$(awk '$1 == "toolchain" {print $2}' go.mod)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Toolchain in go.mod: $version"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          branch: build/bump-go-toolchain
+          commit-message: "build(deps): bump Go toolchain to ${{ steps.toolchain.outputs.version }}"
+          title: "build(deps): bump Go toolchain to ${{ steps.toolchain.outputs.version }}"
+          body: |
+            Automated update of the pinned Go toolchain in `go.mod`.
+
+            Merging this creates a patch release, so that the new Go standard library
+            (including possible security fixes) ends up in the released binaries.
+          delete-branch: true

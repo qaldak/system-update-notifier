@@ -123,6 +123,10 @@ Security fixes should use `fix(security): ...`; the `security` scope guarantees 
 
 After a release is created, GoReleaser builds the binaries and attaches them to it.
 
+The Go toolchain is pinned in `go.mod` (`toolchain` line) and used by all workflows. Every Monday a workflow
+([go-toolchain-update](.github/workflows/go-toolchain-update.yml)) opens a PR `build(deps): bump Go toolchain to ...`
+if a newer Go version exists. Merging it creates a patch release, so Go standard library security fixes reach the binaries.
+
 ## Licence
 
 Unless otherwise specified, all code is released under the [MIT License (MIT)](LICENSE).<br>
