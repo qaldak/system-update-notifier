@@ -23,3 +23,5 @@
 
 # Log files
 *.log
+# semantic-release (installed in CI only)
+node_modules/

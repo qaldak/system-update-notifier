@@ -9,7 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # Conventional Commits: "fix(deps): ..." -> patch release (updated deps end up in the binary)
+    commit-message:
+      prefix: "fix"
+      include: "scope"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    # "ci(deps): ..." -> no release
+    commit-message:
+      prefix: "ci"
+      include: "scope"
