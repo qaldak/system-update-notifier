@@ -116,7 +116,10 @@ which is the **PR title** when using *Squash and merge*:
 | `fix: ...`, `perf: ...` | patch (1.2.26 → 1.2.27) |
 | `feat: ...` | minor (1.2.26 → 1.3.0) |
 | `feat!: ...` or footer `BREAKING CHANGE: ...` | major (1.2.26 → 2.0.0) |
-| `build:`, `chore:`, `ci:`, `docs:`, `test:`, `refactor:`, `style:` | no release |
+| `build(deps): ...`, or any type with scope `security`, e.g. `chore(security): ...` | patch |
+| other `build:`, `chore:`, `ci:`, `docs:`, `test:`, `refactor:`, `style:` | no release |
+
+Security fixes should use `fix(security): ...`; the `security` scope guarantees a release whatever the type.
 
 After a release is created, GoReleaser builds the binaries and attaches them to it.
 
