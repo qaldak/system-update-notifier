@@ -43,7 +43,7 @@ jobs:
           echo "Toolchain in go.mod: $version"
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           branch: build/bump-go-toolchain
