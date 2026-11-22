@@ -4,7 +4,7 @@ go 1.26.0
 
 toolchain go1.27.4
 
-require github.com/slack-go/slack v0.35.0
+require github.com/slack-go/slack v0.36.0
 
 require go.uber.org/multierr v1.10.0 // indirect
 
